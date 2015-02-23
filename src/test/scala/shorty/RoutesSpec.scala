@@ -50,7 +50,7 @@ class RoutesSpec extends FreeSpec with Matchers with ScalatestRouteTest with Rou
   "/:code should" - {
     "redirect to found links" in {
       Get("/some-code") ~> sealRoute(route) ~> check {
-        status should be(StatusCodes.PermanentRedirect)
+        status should be(StatusCodes.MovedPermanently)
         header("Location").get.value should be("http://some-url.com/saved")
       }
     }

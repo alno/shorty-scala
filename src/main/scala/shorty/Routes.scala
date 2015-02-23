@@ -35,7 +35,7 @@ trait Routes extends HttpService {
 
   private def processRedirect(code: String)(uri: String) = {
     incrUrlStats(code)
-    HttpResponse(StatusCodes.PermanentRedirect, headers = HttpHeaders.Location(uri) :: Nil)
+    HttpResponse(StatusCodes.MovedPermanently, headers = HttpHeaders.Location(uri) :: Nil)
   }
 
 }
