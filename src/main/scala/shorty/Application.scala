@@ -11,7 +11,7 @@ object Application extends App {
   val system = ActorSystem("shorty")
   val root = system.actorOf(Props(classOf[RootActor], conf))
 
-  IO(Http)(system) ! Http.Bind(root, "0.0.0.0", port = 8080)
+  IO(Http)(system) ! Http.Bind(root, conf.getString("http.host"), port = conf.getInt("http.port"))
 
   sys.addShutdownHook(system.shutdown())
 }
