@@ -8,13 +8,17 @@ scalaVersion := "2.11.5"
 resolvers += "spray repo" at "http://repo.spray.io"
 
 libraryDependencies ++= Seq(
-  "commons-validator" % "commons-validator" % "1.4.1",
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "io.spray" %% "spray-routing" % sprayVersion,
   "io.spray" %% "spray-can" % sprayVersion, // HTTP server
   "org.postgresql" % "postgresql" % "9.2-1004-jdbc41",
   "com.lucidchart" %% "relate" % "1.7.1" // SQL interpolation
 )
+
+libraryDependencies += ("commons-validator" % "commons-validator" % "1.4.1").
+  exclude("commons-beanutils", "commons-beanutils-core").
+  exclude("commons-collections", "commons-collections").
+  exclude("commons-logging", "commons-logging")
 
 // Test dependencies
 libraryDependencies ++= Seq(
