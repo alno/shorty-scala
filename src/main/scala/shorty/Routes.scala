@@ -12,6 +12,7 @@ trait Routes extends HttpService {
   def shortenUrl(url: String): Future[String]
   def findUrl(code: String): Future[Option[String]]
   def getUrlStats(code: String): Future[Option[Int]]
+  def incrUrlStats(code: String): Unit
 
   val route =
     post {
@@ -28,11 +29,13 @@ trait Routes extends HttpService {
       } ~ path("statistics" / Segment) { code =>
         complete(getUrlStats(code) map { _ map { _.toString } })
       } ~ path(Segment) { code =>
-        complete(findUrl(code) map { _ map uriToRedirect })
+        complete(findUrl(code) map { _ map processRedirect(code) })
       }
     }
 
-  private def uriToRedirect(uri: String) =
+  private def processRedirect(code: String)(uri: String) = {
+    incrUrlStats(code)
     HttpResponse(StatusCodes.PermanentRedirect, headers = HttpHeaders.Location(uri) :: Nil)
+  }
 
 }

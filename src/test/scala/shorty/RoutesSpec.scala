@@ -15,6 +15,7 @@ class RoutesSpec extends FreeSpec with Matchers with ScalatestRouteTest with Rou
   def shortenUrl(url: String) = Future.successful("some-code")
   def findUrl(code: String) = Future.successful(Map("some-code" -> "http://some-url.com/saved").get(code))
   def getUrlStats(code: String) = Future.successful(Map("some-code" -> 123).get(code))
+  def incrUrlStats(code: String) = {}
 
   "/shorten should" - {
     "shorten valid links" in {
