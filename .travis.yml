@@ -6,3 +6,8 @@ before_script:
   - PGPASSWORD=shorty psql -h localhost -U shorty shorty_test < schema.sql
 script:
   - sbt '; test:test ; gatling-it:test'
+cache:
+  directories:
+  - $HOME/.sbt
+  - $HOME/.ivy
+  - $HOME/.m2
