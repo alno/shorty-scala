@@ -17,4 +17,7 @@ class RootActor(val conf: Config) extends Actor with Repository with Routes {
   def repositoryPoolSize =
     conf.getInt("db.connections")
 
+  def baseUrl =
+    conf.getString("http.base-url")
+
 }

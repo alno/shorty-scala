@@ -9,6 +9,8 @@ trait Routes extends HttpService {
 
   implicit def exc: ExecutionContext
 
+  def baseUrl: String
+
   def shortenUrl(url: String): Future[String]
   def findUrl(code: String): Future[Option[String]]
   def getUrlStats(code: String): Future[Option[Int]]
@@ -19,7 +21,7 @@ trait Routes extends HttpService {
       path("shorten") {
         formFields('url.as[String]) { url =>
           validate(UrlValidator.getInstance.isValid(url), "Invalid url") {
-            complete(shortenUrl(url))
+            complete(shortenUrl(url) map { code => s"${baseUrl}/$code" })
           }
         }
       }

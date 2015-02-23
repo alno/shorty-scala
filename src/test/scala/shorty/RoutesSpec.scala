@@ -17,11 +17,13 @@ class RoutesSpec extends FreeSpec with Matchers with ScalatestRouteTest with Rou
   def getUrlStats(code: String) = Future.successful(Map("some-code" -> 123).get(code))
   def incrUrlStats(code: String) = {}
 
+  def baseUrl = "http://example.com"
+
   "/shorten should" - {
     "shorten valid links" in {
-      Post("/shorten", FormData(Map("url" -> "http://some-url.com/example"))) ~> route ~> check {
+      Post("/shorten", FormData(Map("url" -> "http://some-url.com/shorty/example"))) ~> route ~> check {
         status should be(StatusCodes.OK)
-        responseAs[String] should be("some-code")
+        responseAs[String] should be("http://example.com/some-code")
       }
     }
 
