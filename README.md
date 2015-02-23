@@ -1,4 +1,4 @@
-# Shorty
+# Shorty [![Build Status](https://travis-ci.org/alno/shorty-scala.svg)](https://travis-ci.org/alno/shorty-scala)
 
 It's example Scala application for shortening urls.
 
@@ -16,6 +16,12 @@ To run unit tests call:
 
 ```
 $ sbt test
+```
+
+For integration tests (require creation of postgres database):
+
+```
+$ sbt gatling-it:test
 ```
 
 ## Packaging
