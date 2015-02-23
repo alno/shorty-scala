@@ -1,3 +1,6 @@
+configs(IntegrationTest)
+enablePlugins(GatlingPlugin)
+
 val sprayVersion = "1.3.2"
 val akkaVersion = "2.3.6"
 
@@ -27,4 +30,11 @@ libraryDependencies ++= Seq(
   "org.eu.acolyte" %% "jdbc-scala" % "1.0.32" % "test" // Database mocking
 )
 
+// Integration test dependencies
+libraryDependencies ++= Seq(
+  "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.1.3" % "it",
+  "io.gatling"            % "gatling-test-framework"    % "2.1.3" % "it"
+)
+
 mainClass := Some("shorty.Application")
+
