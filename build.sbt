@@ -10,11 +10,13 @@ resolvers += "spray repo" at "http://repo.spray.io"
 libraryDependencies ++= Seq(
   "commons-validator" % "commons-validator" % "1.4.1",
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-  "io.spray" %% "spray-routing" % sprayVersion
+  "io.spray" %% "spray-routing" % sprayVersion,
+  "com.lucidchart" %% "relate" % "1.7.1" // SQL interpolation
 )
 
 // Test dependencies
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-  "io.spray" %% "spray-testkit" % sprayVersion % "test"
+  "io.spray" %% "spray-testkit" % sprayVersion % "test",
+  "org.eu.acolyte" %% "jdbc-scala" % "1.0.32" % "test" // Database mocking
 )
