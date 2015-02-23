@@ -18,15 +18,15 @@ class RepositoryActor(connFactory: () => Connection) extends Actor {
     case SaveUrl(url) =>
       val code = buildCode(sql"SELECT nextval('urls_code_seq')".asSingle { _.long("nextval") })
 
-      sql"INSERT INTO urls(code, url) VALUES($code,$url)"
+      sql"INSERT INTO urls(code, url) VALUES($code,$url)".executeUpdate
 
       sender ! code
     case LoadUrl(code) =>
-      ???
+      sender ! sql"SELECT url FROM urls WHERE code = $code".asSingleOption { _.string("url") }
     case LoadUrlStats(code) =>
-      ???
+      sender ! sql"SELECT visits FROM urls WHERE code = $code".asSingleOption { _.int("visits") }
     case IncrUrlStats(code) =>
-      ???
+      sql"UPDATE urls SET visits = visits + 1 WHERE code = $code".executeUpdate
   }
 
   private def buildCode(codeIdx: Long): String =
