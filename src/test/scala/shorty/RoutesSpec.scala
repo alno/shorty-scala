@@ -14,6 +14,7 @@ class RoutesSpec extends FreeSpec with Matchers with ScalatestRouteTest with Rou
 
   def shortenUrl(url: String) = Future.successful("some-code")
   def findUrl(code: String) = Future.successful(Map("some-code" -> "http://some-url.com/saved").get(code))
+  def getUrlStats(code: String) = Future.successful(Map("some-code" -> 123).get(code))
 
   "/shorten should" - {
     "shorten valid links" in {
@@ -45,4 +46,33 @@ class RoutesSpec extends FreeSpec with Matchers with ScalatestRouteTest with Rou
     }
   }
 
+  "/:code should" - {
+    "redirect to found links" in {
+      Get("/some-code") ~> sealRoute(route) ~> check {
+        status should be(StatusCodes.PermanentRedirect)
+        header("Location").get.value should be("http://some-url.com/saved")
+      }
+    }
+
+    "return 404 when handling non-existend links" in {
+      Get("/some-other-code") ~> sealRoute(route) ~> check {
+        status should be(StatusCodes.NotFound)
+      }
+    }
+  }
+
+  "/statistics/:code should" - {
+    "redirect to found links" in {
+      Get("/statistics/some-code") ~> sealRoute(route) ~> check {
+        status should be(StatusCodes.OK)
+        responseAs[String] should be("123")
+      }
+    }
+
+    "return 404 when handling non-existend links" in {
+      Get("/statistics/some-other-code") ~> sealRoute(route) ~> check {
+        status should be(StatusCodes.NotFound)
+      }
+    }
+  }
 }

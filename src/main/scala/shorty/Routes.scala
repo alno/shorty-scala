@@ -1,10 +1,9 @@
 package shorty
 
+import scala.concurrent.{ Future, ExecutionContext }
 import spray.routing.HttpService
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
+import spray.http.{ StatusCodes, HttpResponse, HttpHeaders }
 import org.apache.commons.validator.routines.UrlValidator
-import spray.http.HttpResponse
 
 trait Routes extends HttpService {
 
@@ -12,6 +11,7 @@ trait Routes extends HttpService {
 
   def shortenUrl(url: String): Future[String]
   def findUrl(code: String): Future[Option[String]]
+  def getUrlStats(code: String): Future[Option[Int]]
 
   val route =
     post {
@@ -25,7 +25,14 @@ trait Routes extends HttpService {
     } ~ get {
       path("expand" / Segment) { code =>
         complete(findUrl(code))
+      } ~ path("statistics" / Segment) { code =>
+        complete(getUrlStats(code) map { _ map { _.toString } })
+      } ~ path(Segment) { code =>
+        complete(findUrl(code) map { _ map uriToRedirect })
       }
     }
+
+  private def uriToRedirect(uri: String) =
+    HttpResponse(StatusCodes.PermanentRedirect, headers = HttpHeaders.Location(uri) :: Nil)
 
 }
