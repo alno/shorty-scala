@@ -18,7 +18,7 @@ trait Repository {
 
   private implicit val timeout = Timeout(2 seconds)
 
-  private val repositoryActorPoolProps = Props(classOf[RepositoryActor], () => getDbConnection).withRouter(RoundRobinPool(5)).withDispatcher("db-dispatcher")
+  private val repositoryActorPoolProps = Props(classOf[RepositoryActor], () => getDbConnection).withRouter(RoundRobinPool(repositoryPoolSize)).withDispatcher("db-dispatcher")
   private val repositoryActorPool = actorRefFactory.actorOf(repositoryActorPoolProps, name = "RepositoryActorPool")
 
   def shortenUrl(url: String): Future[String] =
@@ -34,5 +34,6 @@ trait Repository {
     repositoryActorPool ! IncrUrlStats(code)
 
   def getDbConnection: Connection
+  def repositoryPoolSize: Int
 
 }
