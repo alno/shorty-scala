@@ -25,6 +25,7 @@ class BasicWorkSimulation extends Simulation {
 
   val scn = scenario("Creating and using link") // A scenario is a chain of requests and pauses
     .exec(_.set("url", s"http://example.com/some-url-${math.random}"))
+    .pause(2)
     .exec(http("Shorten link").post("/shorten").formParam("url", "${url}").check(regex(s"${conf.getString("http.base-url")}/(\\w+)").saveAs("code")))
     .exec(http("Use link").get("/${code}").check(status.is(301)).check(header("Location").is("${url}")))
     .pause(1)
