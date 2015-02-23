@@ -3,6 +3,7 @@ package shorty
 import akka.actor.Actor
 import java.sql.Connection
 import com.lucidchart.open.relate.interp._
+import scala.annotation.tailrec
 
 class RepositoryActor(connFactory: () => Connection) extends Actor {
 
@@ -30,7 +31,16 @@ class RepositoryActor(connFactory: () => Connection) extends Actor {
   }
 
   private def buildCode(codeIdx: Long): String =
-    java.lang.Long.toString(codeIdx, 36)
+    buildCode(codeIdx, new StringBuilder)
+
+  @tailrec
+  private def buildCode(codeIdx: Long, builder: StringBuilder): String =
+    if (codeIdx == 0) {
+      builder.toString
+    } else {
+      builder.append(alphabet.charAt((codeIdx % alphabet.size).toInt))
+      buildCode(codeIdx / alphabet.size, builder)
+    }
 
 }
 
@@ -40,5 +50,7 @@ object RepositoryActor {
   case class LoadUrl(code: String)
   case class LoadUrlStats(code: String)
   case class IncrUrlStats(code: String)
+
+  val alphabet = "5BtdPYL7mTJj36DpyxhFbHGcs8rCgfRXvZVzSQ29n4wKMNqkW"
 
 }

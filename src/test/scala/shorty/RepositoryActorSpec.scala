@@ -61,7 +61,7 @@ class RepositoryActorSpec extends TestKit(ActorSystem("test-system")) with FreeS
 
     "save url to database" in {
       actor ! SaveUrl("http://some.url/example")
-      expectMsg("3f")
+      expectMsg("8t")
     }
 
     "load existing url from database" in {
