@@ -1,10 +1,9 @@
 package shorty
 
-import akka.actor.ActorRefFactory
 import scala.concurrent.{ Future, ExecutionContext }
 import scala.concurrent.duration._
 import java.sql.Connection
-import akka.actor.Props
+import akka.actor._
 import akka.routing.RoundRobinPool
 import akka.pattern._
 import akka.util.Timeout
