@@ -1,0 +1,8 @@
+language: scala
+before_script:
+  - sudo -u postgres createuser -d -R -s shorty
+  - sudo -u postgres createdb -O shorty shorty_test
+  - sudo -u postgres psql -d shorty_test -c "ALTER USER shorty PASSWORD 'shorty'"
+  - PGPASSWORD=shorty psql -h localhost -U shorty shorty_test < schema.sql
+script:
+  - sbt '; test:test ; gatling-it:test'
