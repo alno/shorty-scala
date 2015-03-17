@@ -6,7 +6,7 @@ before_script:
   - PGPASSWORD=shorty psql -h localhost -U shorty shorty_test < schema.sql
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION '; test:test ; gatling-it:test'
+  - sbt '; test:test ; gatling-it:test'
 
 after_script:
   # Tricks to avoid unnecessary cache updates
