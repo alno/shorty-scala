@@ -4,10 +4,16 @@ before_script:
   - sudo -u postgres createdb -O shorty shorty_test
   - sudo -u postgres psql -d shorty_test -c "ALTER USER shorty PASSWORD 'shorty'"
   - PGPASSWORD=shorty psql -h localhost -U shorty shorty_test < schema.sql
+
 script:
-  - sbt '; test:test ; gatling-it:test'
+  - sbt ++$TRAVIS_SCALA_VERSION '; test:test ; gatling-it:test'
+
+after_script:
+  # Tricks to avoid unnecessary cache updates
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+
 cache:
   directories:
-  - $HOME/.sbt
-  - $HOME/.ivy
-  - $HOME/.m2
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
