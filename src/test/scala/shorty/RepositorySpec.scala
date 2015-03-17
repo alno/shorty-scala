@@ -1,8 +1,8 @@
 package shorty
 
-import akka.actor._
-import akka.testkit._
 import org.scalatest._
+import org.scalatest.time._
+import org.scalatest.concurrent._
 import java.sql.{ Date, DriverManager }
 import acolyte.jdbc.{ Driver ⇒ AcolyteDriver, QueryExecution, UpdateExecution }
 import acolyte.jdbc.RowLists.{ rowList1, rowList3 }
@@ -10,14 +10,9 @@ import acolyte.jdbc.AcolyteDSL
 import acolyte.jdbc.Implicits._
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
+import javax.sql.DataSource
 
-class RepositoryActorSpec extends TestKit(ActorSystem("test-system")) with FreeSpecLike with Matchers with ImplicitSender with BeforeAndAfterAll {
-
-  import RepositoryActor._
-
-  override def afterAll {
-    TestKit.shutdownActorSystem(system)
-  }
+class RepositorySpec extends FreeSpec with Matchers with ScalaFutures {
 
   val statsIncrQueue = new ArrayBlockingQueue[String](10)
 
@@ -55,38 +50,37 @@ class RepositoryActorSpec extends TestKit(ActorSystem("test-system")) with FreeS
 
   AcolyteDriver.register("acolyte-handler-id", handler)
 
-  val actor = system.actorOf(Props(classOf[RepositoryActor], () => DriverManager.getConnection("jdbc:acolyte:anything-you-want?handler=acolyte-handler-id")))
+  val service = new Repository {
+    override def getDbConnection = DriverManager.getConnection("jdbc:acolyte:anything-you-want?handler=acolyte-handler-id")
+  }
+
+  implicit override val patienceConfig = PatienceConfig(timeout = Span(2, Seconds), interval = Span(5, Millis))
 
   "RepositoryActor should" - {
 
     "save url to database" in {
-      actor ! SaveUrl("http://some.url/example")
-      expectMsg("8t")
+      service.shortenUrl("http://some.url/example").futureValue should be("8t")
     }
 
     "load existing url from database" in {
-      actor ! LoadUrl("abcd")
-      expectMsg(Some("http://some.url/abcd"))
+      service.findUrl("abcd").futureValue should be(Some("http://some.url/abcd"))
     }
 
     "load non-existing url from database" in {
-      actor ! LoadUrl("gewfsxz")
-      expectMsg(None)
+      service.findUrl("gewfsxz").futureValue should be(None)
     }
 
     "load existing url stats from database" in {
-      actor ! LoadUrlStats("abcd")
-      expectMsg(Some(77))
+      service.getUrlStats("abcd").futureValue should be(Some(77))
     }
 
     "load non-existing url stats from database" in {
-      actor ! LoadUrlStats("gewfsxz")
-      expectMsg(None)
+      service.getUrlStats("gewfsxz").futureValue should be(None)
     }
 
     "increment url stats in database" in {
       statsIncrQueue.clear()
-      actor ! IncrUrlStats("abcd")
+      service.incrUrlStats("abcd")
       statsIncrQueue.poll(2, TimeUnit.SECONDS) should be("abcd")
     }
   }

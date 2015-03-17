@@ -11,11 +11,15 @@ class RootActor(val conf: Config) extends Actor with Repository with Routes {
 
   def receive = runRoute(route)
 
-  def getDbConnection =
-    DriverManager.getConnection(s"jdbc:postgresql://${conf.getString("db.host")}:${conf.getString("db.port")}/${conf.getString("db.name")}", conf.getString("db.user"), conf.getString("db.pass"))
+  lazy val dataSource = {
+    val ds = new com.zaxxer.hikari.HikariDataSource
+    ds.setJdbcUrl(s"jdbc:postgresql://${conf.getString("db.host")}:${conf.getString("db.port")}/${conf.getString("db.name")}")
+    ds.setUsername(conf.getString("db.user"))
+    ds.setPassword(conf.getString("db.pass"))
+    ds
+  }
 
-  def repositoryPoolSize =
-    conf.getInt("db.connections")
+  def getDbConnection = dataSource.getConnection
 
   def baseUrl =
     conf.getString("http.base-url")

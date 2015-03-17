@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
   "io.spray" %% "spray-routing" % sprayVersion,
   "io.spray" %% "spray-can" % sprayVersion, // HTTP server
   "org.postgresql" % "postgresql" % "9.2-1004-jdbc41",
+  "com.zaxxer" % "HikariCP-java6" % "2.3.2",
   "com.lucidchart" %% "relate" % "1.7.1" // SQL interpolation
 )
 
